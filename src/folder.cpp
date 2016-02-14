@@ -29,11 +29,23 @@ vector<string> listIn( const string& dirname ){
 	{
 		while ((dir = readdir(d)) != NULL)
 		{
-		fileList.push_back( dir->d_name );
+			fileList.push_back( dir->d_name );
 		}
 
 		closedir(d);
 	}
 
 	return fileList;
+}
+
+Folder::Folder(){
+    folderName = '';
+    parent = -1;
+    numOfFile = 0;
+}
+
+Folder::Folder(const string& Fn, int p, int n){
+    folderName = Fn;
+    parent = p;
+    numOfFile = n;
 }
