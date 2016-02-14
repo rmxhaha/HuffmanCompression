@@ -1,7 +1,9 @@
-#ifndef FILE_H
-#define FILE_H
+#ifndef _FILE_H
+#define _FILE_H
 
 #include <string>
+
+using namespace std;
 
 struct File {
 	File();
