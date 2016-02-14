@@ -16,7 +16,7 @@ struct Folder {
 
 int isFile( const string& name );
 
-vector<string> listIn( const string& dirname );
+void listIn( vector<string>& list, const string& dirname );
 
 #endif
 

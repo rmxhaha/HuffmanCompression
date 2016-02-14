@@ -19,27 +19,26 @@ int isFile( const string& name )
     return -1;
 }
 
-vector<string> listIn( const string& dirname ){
+void listIn(vector<string>& fileList, const string& dirname ){
 	DIR           *d;
 	struct dirent *dir;
 	d = opendir(dirname.c_str());
-	vector<string> fileList;
 
+    int x = 0; // ignore . and .. (the first 2)
 	if (d)
 	{
 		while ((dir = readdir(d)) != NULL)
 		{
-			fileList.push_back( dir->d_name );
+		    if( x++ >= 2 )
+                fileList.push_back( dir->d_name );
 		}
 
 		closedir(d);
 	}
-
-	return fileList;
 }
 
 Folder::Folder(){
-    folderName = '';
+    folderName = "";
     parent = -1;
     numOfFile = 0;
 }
