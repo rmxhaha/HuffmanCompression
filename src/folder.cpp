@@ -1,32 +1,39 @@
-#include "include/folder.h"
+#include "../include/folder.hpp"
+#include "dirent.h"
 
-int readFile(){
-  DIR           *d;
-  struct dirent *dir;
-  d = opendir(".");
-  if (d)
-  {
-    while ((dir = readdir(d)) != NULL)
+int isFile( const string& name )
+{
+    DIR* directory = opendir(name.c_str());
+
+    if(directory != NULL)
     {
-      printf("%s\n", dir->d_name);
+     closedir(directory);
+     return 0;
     }
 
-    closedir(d);
-  }
+    if(errno == ENOTDIR)
+    {
+     return 1;
+    }
 
-  return(0);
+    return -1;
 }
 
+vector<string> listIn( const string& dirname ){
+	DIR           *d;
+	struct dirent *dir;
+	d = opendir(dirname.c_str());
+	vector<string> fileList;
 
+	if (d)
+	{
+		while ((dir = readdir(d)) != NULL)
+		{
+		fileList.push_back( dir->d_name );
+		}
 
+		closedir(d);
+	}
 
-
-
-
-
-
-
-
-
-
-
+	return fileList;
+}
