@@ -1,7 +1,9 @@
 #include "../include/header.hpp"
+
 #include <fstream>
 #include <functional>
 #include <iostream>
+#include <string>
 
 using namespace std;
 
@@ -47,6 +49,22 @@ Header buildHead( const string& rootDirectory ){
     build( rootDirectory,-1,"");
 
     return head;
+}
+
+
+string getFullDir( Folder *fl, Header *header ){
+    if( fl->parent == -1 ) return "";
+
+    return getFullDir(&(header->folders[fl->parent]), header) + "/" + fl->folderName;
+}
+void printHead( Header& header ){
+    int fileidx = 0;
+    for( auto& fl : header.folders ){
+        string cdir = getFullDir(&fl,&header);
+        cout << cdir << "/ (" << fl.numOfFile <<")\n";
+        for(int limit = fileidx + fl.numOfFile; fileidx < limit; ++ fileidx )
+            cout << cdir << "/" << header.files[fileidx].fileName << endl;
+    }
 }
 
 Header parseHead( const string& bin );

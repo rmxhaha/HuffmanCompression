@@ -9,9 +9,17 @@ using namespace std;
 
 int main(){
     Header head;
-    head = buildHead(".");
+    head = buildHead("sample");
     for( auto it = head.folders.begin(); it != head.folders.end(); ++ it ){
         cout << it->folderName << endl;
     }
+    cout << endl;
+    for( auto& it : head.files ){
+        cout << it.fileName << endl;
+    }
+
+    cout << endl;
+    printHead(head);
+
 	return 0;
 }

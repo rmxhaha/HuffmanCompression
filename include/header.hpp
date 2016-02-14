@@ -13,6 +13,8 @@ Header buildHead( const string& rootDirectory );
 
 Header parseHead( const string& bin );
 
+void printHead( Header& header );
+
 string Header2Bin( Header& header );
 
 #endif
