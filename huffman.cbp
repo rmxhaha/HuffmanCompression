@@ -31,6 +31,13 @@
 		<Compiler>
 			<Add option="-Wall" />
 		</Compiler>
+		<Unit filename="include/file.hpp" />
+		<Unit filename="include/folder.hpp" />
+		<Unit filename="include/header.hpp" />
+		<Unit filename="src/file.cpp" />
+		<Unit filename="src/folder.cpp" />
+		<Unit filename="src/header.cpp" />
+		<Unit filename="src/main.cpp" />
 		<Extensions>
 			<code_completion />
 			<envvars />
