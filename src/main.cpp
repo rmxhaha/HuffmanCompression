@@ -22,6 +22,7 @@ int main(){
     cout << endl;
     printHead(head);
 */
+    printHead(head);
     ofstream outfile;
     outfile.open ("sample.hu", ios::out | ios::binary);
     Header2Bin(head,outfile);
@@ -30,5 +31,8 @@ int main(){
     ifstream infile("sample.hu");
     Bin2Header(head,infile);
     infile.close();
+
+    printHead(head);
+
 	return 0;
 }

@@ -80,7 +80,7 @@ void Bin2Header( Header& header, ifstream& myfile ){
 
     size = num;
 
-    cout << size << endl;
+//    cout << size << endl;
     for( int i = 0; i < size; ++ i ){
         Folder folder;
         char c;
@@ -95,7 +95,7 @@ void Bin2Header( Header& header, ifstream& myfile ){
         folder.numOfFile = num;
         nfsize += num;
 
-        cout << folder.folderName << "\t" << folder.parent << "\t" << folder.numOfFile << endl;
+//        cout << folder.folderName << "\t" << folder.parent << "\t" << folder.numOfFile << endl;
         header.folders.push_back(folder);
     }
 
@@ -111,7 +111,7 @@ void Bin2Header( Header& header, ifstream& myfile ){
         myfile >> str[0] >> str[1] >> str[2] >> str[3];
         file.size = num;
 
-        cout << file.fileName << "\t" << file.size << endl;
+//        cout << file.fileName << "\t" << file.size << endl;
         header.files.push_back( file );
     }
 }
@@ -126,7 +126,8 @@ void Header2Bin( Header& header, ofstream& myfile ){
 
     // writting folders block
     for( auto& folder : header.folders ){
-        cout << folder.folderName << "\t" << folder.parent << "\t" << folder.numOfFile << endl;
+        //cout << folder.folderName << "\t" << folder.parent << "\t" << folder.numOfFile << endl;
+
         for( auto& c : folder.folderName ){
             myfile << c;
         }
@@ -138,7 +139,8 @@ void Header2Bin( Header& header, ofstream& myfile ){
     }
 
     for( auto& file : header.files ){
-        cout << file.fileName << "\t" << file.size << endl;
+        //cout << file.fileName << "\t" << file.size << endl;
+
         for( auto& c : file.fileName ){
             myfile << c;
         }
@@ -147,7 +149,7 @@ void Header2Bin( Header& header, ofstream& myfile ){
         myfile << str[0] << str[1] << str[2] << str[3];
     }
 
-    cout << "--------------------------------------\n";
+//    cout << "--------------------------------------\n";
 
 }
 
