@@ -11,10 +11,10 @@ struct Header {
 
 Header buildHead( const string& rootDirectory );
 
-Header parseHead( const string& bin );
 
 void printHead( Header& header );
 
-string Header2Bin( Header& header );
+void Bin2Header( Header& header, const string& fn );
 
+void Header2Bin( Header& header, const string& fn );
 #endif
