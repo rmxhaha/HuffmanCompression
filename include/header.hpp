@@ -14,7 +14,7 @@ Header buildHead( const string& rootDirectory );
 
 void printHead( Header& header );
 
-void Bin2Header( Header& header, const string& fn );
+void Bin2Header( Header& header, ifstream& infile );
 
-void Header2Bin( Header& header, const string& fn );
+void Header2Bin( Header& header, ofstream& myfile );
 #endif

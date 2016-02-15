@@ -3,7 +3,7 @@
 #include "../include/header.hpp"
 
 #include <iostream>
-
+#include <fstream>
 using namespace std;
 
 
@@ -22,7 +22,13 @@ int main(){
     cout << endl;
     printHead(head);
 */
-    Header2Bin(head,"sample.hu");
-    Bin2Header(head,"sample.hu");
+    ofstream outfile;
+    outfile.open ("sample.hu", ios::out | ios::binary);
+    Header2Bin(head,outfile);
+    outfile.close();
+
+    ifstream infile("sample.hu");
+    Bin2Header(head,infile);
+    infile.close();
 	return 0;
 }
