@@ -1,4 +1,5 @@
 bin/
-*.depend
 *.exe
 *.o
+huffman.depend
+huffman.layout
