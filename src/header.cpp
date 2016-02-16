@@ -56,16 +56,16 @@ Header buildHead( const string& rootDirectory ){
 string getFullDir( Folder *fl, Header *header ){
     if( fl->parent == -1 ) return "";
 
-    return getFullDir(&(header->folders[fl->parent]), header) + "/" + fl->folderName;
+    return getFullDir(&(header->folders[fl->parent]), header) + "\\" + fl->folderName;
 }
 
 void printHead( Header& header ){
     int fileidx = 0;
     for( auto& fl : header.folders ){
         string cdir = getFullDir(&fl,&header);
-        cout << cdir << "/ (" << fl.numOfFile <<")\n";
+        cout << cdir << "\\ (" << fl.numOfFile <<")\n";
         for(int limit = fileidx + fl.numOfFile; fileidx < limit; ++ fileidx )
-            cout << cdir << "/" << header.files[fileidx].fileName << endl;
+            cout << cdir << "\\" << header.files[fileidx].fileName << " " << (header.files[fileidx].size) << endl;
     }
 }
 
