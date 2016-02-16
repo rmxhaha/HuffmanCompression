@@ -35,6 +35,7 @@ int main(){
     head.folders.clear();
     Bin2Header(head,infile);
     buildFolder(head,"sample2");
+    extractArchieve(head,infile,"sample2");
     infile.close();
 
     printHead(head);
