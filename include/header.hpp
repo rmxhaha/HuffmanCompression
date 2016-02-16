@@ -11,6 +11,7 @@ struct Header {
 
 Header buildHead( const string& rootDirectory );
 
+string getFullDir( Folder *fl, Header *header );
 
 void printHead( Header& header );
 
