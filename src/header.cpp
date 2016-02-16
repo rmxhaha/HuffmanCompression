@@ -76,6 +76,7 @@ void Bin2Header( Header& header, ifstream& myfile ){
     char *str = (char*)&num;
 
     myfile.seekg(0, ios::beg);
+    myfile.unsetf(ios_base::skipws);
     myfile.read(str, 4);
 
     size = num;
@@ -121,6 +122,7 @@ void Header2Bin( Header& header, ofstream& myfile ){
     // writting num of folder
     int num = header.folders.size();
     char *str = (char*)&num;
+    myfile.unsetf(ios_base::skipws);
     myfile << str[0] << str[1] << str[2] << str[3];
 
 
