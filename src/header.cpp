@@ -14,7 +14,9 @@ Header buildHead( const string& rootDirectory ){
     auto getFileSize = [](const string& fn){
         ifstream file(fn, ios::in);
         file.seekg(0, ios::end);
-        return file.tellg();
+        int size = file.tellg();
+        file.close();
+        return size;
     };
 
     std::function<void (const string& , int , const string& )>
