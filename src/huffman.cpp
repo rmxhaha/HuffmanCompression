@@ -1,33 +1,32 @@
-#include <string> 
-#include <bitset> 
 #include <iostream>
+#include <fstream>
 using namespace std;
-
-struct node
-{
-	unsigned char c;
-	int weight;
-	int order;
-	node *left;
-	node *right;
-	node *parent;
-	bool NYT;
-};
 
 class HuffmanTree {
 public:
-	
+	struct node
+{
+	unsigned char c; //karakter pada daun
+	int weight; //frekuensi kemunculan karakter
+	int order; //nomor node
+	bool NYT;
+	node *left;
+	node *right;
+	node *parent;
+};
+	// Constructor
 	HuffmanTree() {
-		b = new bool[16];
 		n = new node;
 		n->weight = 0;
 		n->order = 513;
 		n->NYT = true;
+		n->c = 'z';
 		n->left = NULL;
 		n->right = NULL;
 		n->parent = NULL;
 	}
 	
+	// Destructor
 	~HuffmanTree() {
         dealokasi(n);
     }
@@ -37,9 +36,27 @@ public:
 			dealokasi(P->left);
 			dealokasi(P->right);
 			delete(P);
+			P = NULL;
+		}
+	}
+
+	// Mengecek apakah _n merupakan daun
+	bool isLeaf(node *_n) {
+		if ((_n->left == NULL) && (_n->right == NULL)) {
+			return true;
+		} else {
+			return false;
 		}
 	}
 	
+	/* Getter */
+	
+	// Mengembalikan node pohon
+	node *getNode() {
+		return n;
+	}
+	
+	// Menambahkan karakter pada pohon
 	void addNextChar(unsigned char _c) {
 		if (bSearch(n,_c)) {
 			addExistingChar(_c);
@@ -48,45 +65,58 @@ public:
 		}
 	}
 	
+	// Menambahkan karakter baru pada pohon
 	void addNewChar(unsigned char _c) {
 		node *_n = search(n);
+		
 		_n->left = new node;
 		_n->right = new node;
-		_n->left->left = NULL;
-		_n->left->right = NULL;
-		_n->right->left = NULL;
-		_n->right->right = NULL;
-		_n->right->parent = _n;
-		_n->left->parent = _n;
-		_n->NYT = false;
-		_n->right->NYT = false;
-		_n->left->NYT = true;
-		_n->right->order = _n->order - 1;
-		_n->left->order = _n->order - 2;
-		_n->right->weight = 1;
-		_n->left->weight = 0;
-		_n->right->c = _c;
-		update(_n);
+		
+		node *Left = _n -> left;
+		node *Right = _n -> right;
+		
+		_n -> c = 'z';
+		_n -> NYT = false;
+		
+		Left -> left = NULL;
+		Left -> right = NULL;
+		Left -> parent = _n;
+		Left -> NYT = true;
+		Left -> weight = 0;
+		Left -> order = (_n -> order) - 2;
+		Left -> c = 'z';
+		
+		Right -> left = NULL;
+		Right -> right = NULL;
+		Right -> parent = _n;
+		Right -> NYT = false;
+		Right -> weight = 0;
+		Right -> order = (_n -> order) - 1;
+		Right -> c = _c;
+		
+		update(Right);
 	}
 	
+	// Menambahkan karakter yang sudah ada
 	void addExistingChar(unsigned char _c) {
 		node *_n = search(n,_c);
 		update(_n);
 	}
     
+    // Update posisi node P
     void update(node *P) {
 		if (P != NULL) {
 			P->weight++;
 		}
 		if (P->parent != NULL) {
 			if (check(P)) {
-				update(P);
 			} else {
 				update(P->parent);
 			}
 		}
 	}
 	
+	// Cek apakah node P dapat ditukar
 	bool check(node *P) {
 		node *_n = search(n,P->order+1);
 		if (P->parent == _n) {
@@ -103,8 +133,10 @@ public:
 		return false;
 	}
 	
+	// Menukar parent dari P dan _P
     void swapParent(node *P, node *_P) {
 		node *temp;
+		
 		if (P->parent->left == P) {
 			if (_P->parent->left == _P) {
 				P->parent->left = _P;
@@ -127,6 +159,7 @@ public:
 		_P->parent = temp;
 	}
 	
+	// Menukar dua node
     void swap(node *P, node *_P) {
 		int _order;
 		swapParent(P,_P);
@@ -135,7 +168,9 @@ public:
 		_P->order = _order;
 	}
 	
-	// Search
+	/* Fungsi dan Prosedur Pencarian */
+	
+	// Mengecek apakah ada node yang merupakan NYT
 	bool bSearch(node *P) {
 		if (P == NULL) {
 			return false;
@@ -148,6 +183,7 @@ public:
 		}
 	}
 	
+	// Mengecek apakah ada node dengan order tertentu
 	bool bSearch(node *P, int _order) {
 		if (P == NULL) {
 			return false;
@@ -160,22 +196,24 @@ public:
 		}
 	}
 
+	// Mengecek apakah ada node degnan karakter tertentu
 	bool bSearch(node *P, unsigned char _c) {
 		if (P == NULL) {
 			return false;
 		}
-		else if (P->c == _c) {
+		else if ((P->c == _c) && isLeaf(P) && !(P->NYT)) {
 			return true;
 		}
 		else {
 			return (bSearch(P->left, _c) || bSearch(P->right, _c));
 		}
 	}
-		
+	
+	// Mengembalikan node yang merupakan NYT
 	node *search(node *P) {
 		if (P == NULL) {
 			return NULL;
-		} else if (P->NYT == true) {
+		} else if ((P->NYT) && (isLeaf(P))) {
 			return P;
 		} else if (bSearch(P->left)) {
 			return search(P->left);
@@ -186,6 +224,7 @@ public:
 		}
 	}
 	
+	// Mengembalikan node dengan order tertentu
 	node *search(node *P, int _order) {
 		if (P == NULL) {
 			return NULL;
@@ -200,10 +239,11 @@ public:
 		}
 	}
 	
+	// Mengembalikan node dengan karakter tertentu
 	node *search(node *P, unsigned char _c) {
 		if (P == NULL) {
 			return NULL;
-		} else if (P->c == _c) {
+		} else if ((P->c == _c) && (isLeaf(P)) && (!P->NYT)) {
 			return P;
 		} else if (bSearch(P->left, _c)) {
 			return search(P->left, _c);
@@ -214,210 +254,256 @@ public:
 		}
 	}
 	
-	void searchNum(node *P, unsigned char _c, int *num) {
+	// Membentuk array of boolean berupa letak karater _c pada pohon
+	void searchNum(node *P, unsigned char _c, unsigned char &x, int &count, ostream &output) {
 		if (P != NULL) {
-			if (P->c == _c) {
-				cout << endl;
+			if ((P->c == _c) && (isLeaf(P))) {
 			} else if (bSearch(P->left, _c)) {
-				b[*num] = false;
-				*num = *num + 1;
-				cout << 0;
-				searchNum(P->left, _c, num);
-			} else if (bSearch(P->right, _c)) {
-				b[*num] = true;
-				*num = *num + 1;
-				cout << 1;
-				searchNum(P->right, _c, num);
-			}
-		}
-	}
-	
-	void searchNum(node *P, int *num) {
-		if (P != NULL) {
-			if (P->NYT) {
-			} else if (bSearch(P->left)) {
-				b[*num] = false;
-				*num = *num + 1;
-				searchNum(P->left, num);
-			} else if (bSearch(P->right)) {
-				b[*num] = true;
-				*num = *num + 1;
-				searchNum(P->right, num);
-			}
-		}
-	}	
-	
-	bool *getBit() {
-		return b;
-	}
-	
-	node *getNode() {
-		return n;
-	}
-	
-	void decode(unsigned char *c, int curr_c) {
-		int current = 0;
-		int curr_b = 0;
-		node *_n;
-		bool *_b = new bool [64];
-		_n = n;
-		addNewChar(c[current]);
-		cout << c[current];
-		current++;
-		while (current <= curr_c) {
-			if (current != curr_c) {
-				char_Bit(_b,c[current],&curr_b);
-			}
-			current++;
-			bit_Char(_b,c,&curr_b,&current,_n);
-		}
-	}
-
-	void char_Bit(bool *_b, unsigned char c, int *current) {
-		for(int i = *current; i < (*current+8); i++) {
-			_b[i] = (c >> (*current+7-i)) & 1;
-		}		
-		*current += 8;
-	}
-	
-	bool isLeaf(node *_n) {
-		if ((_n->left == NULL) && (_n->right == NULL)) {
-			return true;
-		} else {
-			return false;
-		}
-	}
-	
-	void bit_Char(bool *_b, unsigned char *c, int *curr_b, int *current, node *_n) {
-		unsigned char _c;
-		for(int i = 0; i < *curr_b; i++)
-		{
-			if (isLeaf(_n)) {
-				if (_n->NYT) {
-					if (*curr_b-i >= 8) {
-						bitChar(_b,&_c,i,curr_b);
-						cout << _c;
-						addNewChar(_c);
-					} else {
-						char_Bit(_b,c[*current],curr_b);
-						bitChar(_b,&_c,i,curr_b);
-						addNewChar(_c);
-						cout << _c;
-						_n=n;
-						break;
-					}
-				} else {
-					_c = _n->c;
-					addExistingChar(_c);
-					cout << _c;
+				count++;
+				x = x << 1;
+				x &= ~(1);
+				if (count == 8) {
+					output.write((char*) &x, sizeof(char));
+					count = 0;
 				}
-				_n = n;
+				searchNum(P->left, _c, x, count, output);
+			} else if (bSearch(P->right, _c)) {
+				count++;
+				x = x << 1;
+				x |= 1;
+				if (count == 8) {
+					output.write((char*) &x, sizeof(char));
+					count = 0;
+				}
+				searchNum(P->right, _c, x, count, output);
 			}
-			if (_b[i] == 0) {
-				_n = _n-> left;
-			} else {
-				_n = _n -> right;
-			}
-
-		}
-		*curr_b -= 8;
-	}
-
-	void bitChar(bool *_b, unsigned char *c, int start, int *curr_b) {
-		for(int i = start; i < start+8; i++) {
-			*c &= ~(1 << (7 + start - i));
-			*c |= (_b[i] & 1) << (7 +start - i);
-		}
-		for(int i = start+8; i < start+8+*curr_b; i++) {
-			_b[i-start-8]=_b[i];
-			_b[i]=0;
-		}		
-		*curr_b -= 8;
-		*curr_b -= start;
-	}
-	
-	void bit_Char(bool *_b, unsigned char *c, int *curr_b, int *curr_c) {
-		while (*curr_b >= 8) {
-			for(int i = 0; i < 8; i++) {
-				c[*curr_c] &= ~(1 << (7-i));
-				c[*curr_c] |= (_b[i] & 1) << (7 - i);
-				_b[i] = 0;
-			}
-			*curr_b -= 8;
-			for(int i = 8; i < 8+*curr_b; i++) {
-				_b[i-8]=_b[i];
-				_b[i]=0;
-			}
-			*curr_c += 1;
 		}
 	}
 	
-	void combine(bool* a, bool* b, int *curr_b, int j) {
-		int i;
-		for (i=*curr_b;i<(*curr_b+j);i++) {
-			a[i] = b[i-*curr_b];
+	// Membentuk array of boolean berupa letak karater _c pada pohon
+	void searchNum(node *P, unsigned char &x, int &count, ostream &output) {
+		if (P != NULL) {
+			if ((P->NYT) && (isLeaf(P))) {
+			} else if (bSearch(P->left)) {
+				count++;
+				x = x << 1;
+				x &= ~(1);
+				if (count == 8) {
+					output.write((char*) &x, sizeof(char));
+					count = 0;
+				}
+				searchNum(P->left, x, count, output);
+			} else if (bSearch(P->right)) {
+				count++;
+				x = x << 1;
+				x |= 1;
+				if (count == 8) {
+					output.write((char*) &x, sizeof(char));
+					count = 0;
+				}
+				searchNum(P->right, x, count, output);
+			}
 		}
-		*curr_b += j;
 	}
-		
-	void encode(unsigned char *arr_c, int *curr_c) {
+
+	// Prosedur dekode, c berupa masukan karakter (hasil enkode), curr_c
+	// merupakan karakter yang sedang dibaca, size merupakan panjang
+	// array of karakter tersebut
+	void decode(int size) {
+		unsigned char x; unsigned char c; 
+		node *_n;
+		int count;
+		int read;
+		ifstream input("output", ios::binary | ios::in);
+		ofstream output("hasil.jpg", ios::binary | ios::out);
+		input.read((char*) &x, sizeof(char));	
+		output.write((char*) &x, sizeof(char));
+		addNewChar(x);
+		count = 0; read = 1; _n = n;
+		// Membaca sampai sudah tidak ada yang dapat dibaca
+		while (read < size) {
+			if (!(input.eof())) {
+				input.read((char*) &x, sizeof(char));
+				// Mengubah karakter ke bit (array of boolean)
+				count = 8;
+			}
+			// Mengubah beberapa karakter yang telah dibaca menjadi bit
+			// menjadi karakter untuk di outputkan
+			while (count > 0)
+			{
+				// Keluar apabila sudah menghasilkan bit yang sesuai saat dibaca
+				if (read >= size) {
+					break;
+				}
+				// Apabila merupakan daun, outputkan karakter
+				if (isLeaf(_n)) {
+					read += 1;
+					if ((_n->NYT)==true) {
+							unsigned char z;
+							input.read((char*) &c, sizeof(char));
+							char_Bit_decode(c,x,count,output,z);
+							addNewChar(z);
+							_n = n;
+					} else {
+						unsigned char z;
+						z = _n->c;
+						output.write((char*) &z, sizeof(char));
+						addExistingChar(z);
+						_n = n;
+					}
+				}
+				// Bergeser sesuai pohon dan bit yang diterima
+				if (((x >> 7) & 1) == 0) {
+					x = x << 1;
+					_n = (_n-> left);
+					count--;
+				} else {
+					x = x << 1;
+					_n = (_n -> right);
+					count--;
+				}
+			}
+		}
+		input.close();
+		output.close();
+	}
+	
+	// Mengubah char menjadi bit (array of boolean)
+	void char_Bit_decode (unsigned char c, unsigned char &x, int &count, ostream &output, unsigned char &z) {
+		if (count == 0) {	
+			z = c;
+			x = c;
+			output.write((char*) &x, sizeof(char));
+		} else {
+			x = x >> (8-count);
+			for (int i=0; i<(8-count); i++) {
+				x = x << 1;
+				x &= ~(1);
+				x |= ((c >> (7-i)) & 1);
+			}	
+			output.write((char*) &x, sizeof(char));
+			z = x;
+			x = c << (8-count);
+		}
+	}
+	
+	// Mengubah char menjadi bit (array of boolean)
+	void char_Bit (unsigned char c, unsigned char &x, int &count, ostream &output) {
+		if (count == 0) {
+			output.write((char*) &c, sizeof(char));
+		} else {
+			for (int i=0; i<8; i++) {
+				x = x << 1;
+				x &= ~(1);
+				x |= (c >> (7-i)) & 1;
+				count++;
+				if (count == 8) {
+					output.write((char*) &x, sizeof(char));
+					count = 0;
+				}
+			}
+		}
+	}
+
+	// Proses enkode adaptive huffman, arr_c merupakan hasil dari enkode,
+	// disimpan menjadi array karakter, curr_c merupakan indeks c, dan
+	// size merupakan banyaknya bit yang di enkode
+	void encode(int &size) {
+	/* Prosedur akan membaca input dan menghasilkan hasil enkripsi dari
+	 * karakter yang ditulis, adaptive huffman */
 		unsigned char c; 
-		int i;
-		int j;
-		int curr_b = 0;
-		bool *_b = new bool [64];
-		cin >> c;
-		addNewChar(c);
-		char_Bit(_b,c,&curr_b);
-		bit_Char(_b,arr_c,&curr_b,curr_c);
-		cin >> c;
-		while (c != 'z') {
-			if (bSearch(getNode(),c)) {
-				j = 0;
-				searchNum(getNode(),c,&j);
-				combine(_b,getBit(),&curr_b,j);
-				bit_Char(_b,arr_c,&curr_b,curr_c);
-				addExistingChar(c);
-			} else {
-				j = 0;
-				searchNum(getNode(),&j);
-				combine(_b,getBit(),&curr_b,j);
-				char_Bit(_b,c,&curr_b);
-				bit_Char(_b,arr_c,&curr_b,curr_c);
-				addNewChar(c);
+		unsigned char x;
+		int count = 0; 
+		ifstream input("huffman3.exe", ios::binary | ios::in);
+		ofstream output("output", ios::binary | ios::out);
+		if (input != NULL)
+		{
+			input.read((char*) &c, sizeof(char));
+			addNewChar(c);
+			size+=1;
+			char_Bit(c,x,count,output);
+			input.read((char*) &c, sizeof(char));
+			while (!(input.eof())) {
+				// update pohon dan mengenkripsi
+				if (bSearch(getNode(),c)) {
+					// karakter sudah ada
+					searchNum(getNode(),c,x,count,output);
+					addExistingChar(c);
+					size+=1;
+				} else {
+					// karakter belum ada
+					searchNum(getNode(),x,count,output);
+					char_Bit(c,x,count,output);
+					addNewChar(c);
+					size+=1;
+				}
+				input.read((char*) &c, sizeof(char));
+			} 
+			if (count != 0) {
+				// Menyelesaikan bit yang belum diubah dengan menambahkan
+				// '0' sampai membentuk 8 bit
+				x = x << (8 - count);
+				output.write((char*) &x, sizeof(char));
 			}
-			cin >> c;
 		}
-		if (curr_b != 0) {
-			for (i=curr_b;i<8;i++) {
-				_b[i] = 0;
-			}
-			curr_b = 8;
-			bit_Char(_b,arr_c,&curr_b,curr_c);
+		else
+		{
+			printf("File tidak dapat dibuka.\n");
 		}
-		delete(_b);
+		input.close();
+		output.close();
 	}
 
 	// Data
 	node *n;
-	bool *b;
+	
+	void prin(node *P) {
+		if (P != NULL) {
+			if (isLeaf(P)) {
+				cout << P->c << "  ";
+			}
+			prin(P->left);
+			prin(P->right);
+		}
+	}
+		void PrintTree (node *P, int h)
+	{	/* Kamus Lokal */
+		int i;
+		
+		/* Algoritma */
+		if (P != NULL)
+		{
+			if (isLeaf(P)) {
+				printf("%c %d\n", P->c, P->weight);
+			} else {
+				printf("@ %d\n", P->weight);
+			}
+			for (i=1; i<=h; i++)
+			{
+				printf(" ");
+			}
+			PrintTree(P->left,1+h);
+			for (i=1; i<=h; i++)
+			{
+				printf(" ");
+			}
+			PrintTree(P->right,1+h);
+		}
+		else
+		{
+			printf(".\n");
+		}
+	}
 };
 
 
 
 int main() {
-	unsigned char *arr_c = new unsigned char[64];
-	HuffmanTree H; HuffmanTree T;
-	int curr_c = 0;
-	H.encode(arr_c,&curr_c);
-	for (int i=0;i<curr_c;i++) {
-		cout << arr_c[i];
-		cout << endl;
-	}
-	T.decode(arr_c,curr_c);
+	int size = 0;
+	HuffmanTree *H = new HuffmanTree;
+	H->encode(size);
+	delete(H);
+	HuffmanTree *T = new HuffmanTree;
+	T->decode(size);
 	return 0;
-	/*a 01100001
-2 00110010
-? 00111111*/
 }
-			
