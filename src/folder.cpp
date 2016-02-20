@@ -39,12 +39,17 @@ void listIn(vector<string>& fileList, const string& dirname ){
 
 Folder::Folder(){
     folderName = "";
+    folderPath = ".";
     parent = -1;
     numOfFile = 0;
 }
 
-Folder::Folder(const string& Fn, int p, int n){
-    folderName = Fn;
+Folder::Folder(const string& path, int p, int n){
+    size_t last = path.find_last_of("\\");
+    folderPath = path;
+    folderName = path.substr(last+1);
+    parentPath = path.substr(0,last);
+
     parent = p;
     numOfFile = n;
 }
