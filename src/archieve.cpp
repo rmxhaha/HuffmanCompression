@@ -2,16 +2,22 @@
 
 #include <iostream>
 #include <windows.h>
+#include "../include/HuffmanTree.hpp"
+
 using namespace std;
 
-void fillArchieve( Header& header, ofstream& myfile, const string& ftarget ){
+
+
+void fillArchieve( Header& header, BitWriter& writer, const string& ftarget ){
     int fileidx = 0;
     for( auto& fl : header.folders ){
-        string cdir = getFullDir(&fl,&header);
+        string cdir = fl.folderPath;
+        //getFullDir(&fl,&header);
         cout << cdir << "\\ (" << fl.numOfFile <<")\n";
         for(int limit = fileidx + fl.numOfFile; fileidx < limit; ++ fileidx ){
-            string fullPath = ftarget + "\\" + cdir + "\\" + header.files[fileidx].fileName;
+            string fullPath = cdir + "\\" + header.files[fileidx].fileName;
             cout << fullPath << " " << (header.files[fileidx].size) << endl;
+            /*
             ifstream infile( fullPath );
 //            myfile << infile.rdbuf();
 //            infile.tellg(0,ios::beg);
@@ -23,11 +29,14 @@ void fillArchieve( Header& header, ofstream& myfile, const string& ftarget ){
                 myfile << c;
             }
             infile.close();
+            */
+            HuffmanTree T;
+            T.compress(writer,fullPath);
         }
     }
 }
 
-void extractArchieve( Header& header, ifstream& myfile, const string& ftarget ){
+void extractArchieve( Header& header, BitReader& reader, const string& ftarget ){
     int fileidx = 0;
     for( auto& fl : header.folders ){
         string cdir = getFullDir(&fl,&header);
@@ -36,9 +45,14 @@ void extractArchieve( Header& header, ifstream& myfile, const string& ftarget ){
             string fullPath = ftarget + "\\" + cdir + "\\" + header.files[fileidx].fileName;
             int size = header.files[fileidx].size;
             cout << fullPath << " " << size << endl;
-            ofstream outfile( fullPath );
 //            myfile << infile.rdbuf();
 //            infile.tellg(0,ios::beg);
+
+            HuffmanTree T;
+            T.decompress(reader,fullPath,size);
+
+            /*
+            ofstream outfile( fullPath );
             outfile.unsetf(ios_base::skipws);
             char c;
             int i = 0;
@@ -48,6 +62,8 @@ void extractArchieve( Header& header, ifstream& myfile, const string& ftarget ){
                 outfile << c;
             }
             outfile.close();
+            }*/
+
         }
     }
 }
