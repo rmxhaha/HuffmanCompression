@@ -12,7 +12,14 @@ void BitWriter::writeBit(bool b){
     }
 }
 
+void BitWriter::writeByte(char c){
+    for( int i = 7; i >= 0; --i ){
+        writeBit((c>>i)&1);
+    }
+}
+
 void BitWriter::flush(){
+    if( buffer_bid == 7) return;
     stream << buffer;
     buffer = '\0';
     buffer_bid = 7;

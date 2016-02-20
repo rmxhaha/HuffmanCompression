@@ -10,7 +10,7 @@ public:
     BitWriter(ofstream&);
 
     void writeBit(bool b);
-
+    void writeByte(char c);
     void flush();
 private:
     ofstream& stream;
