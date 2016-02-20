@@ -31,20 +31,20 @@
 		<Compiler>
 			<Add option="-Wall" />
 		</Compiler>
+		<Unit filename="include/HuffmanTree.hpp" />
 		<Unit filename="include/archieve.hpp" />
 		<Unit filename="include/bitreader.hpp" />
 		<Unit filename="include/bitwriter.hpp" />
 		<Unit filename="include/file.hpp" />
 		<Unit filename="include/folder.hpp" />
 		<Unit filename="include/header.hpp" />
-		<Unit filename="include/huffman.hpp" />
+		<Unit filename="src/HuffmanTree.cpp" />
 		<Unit filename="src/archieve.cpp" />
 		<Unit filename="src/bitreader.cpp" />
 		<Unit filename="src/bitwritter.cpp" />
 		<Unit filename="src/file.cpp" />
 		<Unit filename="src/folder.cpp" />
 		<Unit filename="src/header.cpp" />
-		<Unit filename="src/huffman.cpp" />
 		<Unit filename="src/main.cpp" />
 		<Extensions>
 			<code_completion />
