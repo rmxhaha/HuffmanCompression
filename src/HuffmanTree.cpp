@@ -1,6 +1,7 @@
 #include <iostream>
 #include <fstream>
 #include "../include/HuffmanTree.hpp"
+
 using namespace std;
 
 // Constructor
@@ -18,7 +19,7 @@ HuffmanTree::HuffmanTree() {
 		loct[i] = NULL;
 	}
 }
-	
+
 // Destructor
 HuffmanTree::~HuffmanTree() {
 }
@@ -59,7 +60,7 @@ void HuffmanTree::char_Bit (unsigned char c, unsigned char &x, int &count, ostre
 
 // Mengubah dan meng-outputkan karakter input ke dalam karakter penyimpanan
 void HuffmanTree::char_Bit_decode (unsigned char c, unsigned char &x, int &count, ostream &output, unsigned char &z) {
-	if (count == 0) {	
+	if (count == 0) {
 		z = c;
 		x = c;
 		output.write((char*) &x, sizeof(char));
@@ -70,7 +71,7 @@ void HuffmanTree::char_Bit_decode (unsigned char c, unsigned char &x, int &count
 			x = x << 1;
 			x &= ~(1);
 			x |= ((c >> (7-i)) & 1);
-		}	
+		}
 		output.write((char*) &x, sizeof(char));
 		z = x;
 		x = c << (8-count);
@@ -81,18 +82,18 @@ void HuffmanTree::char_Bit_decode (unsigned char c, unsigned char &x, int &count
 void HuffmanTree::addNewChar(unsigned char _c) {
 	// Mengambil node NYT
 	node *_n = &arrOrder[nNYT];
-	
+
 	// Membuat node baru (kiri dan kanan)
 	_n->left = &arrOrder[(_n->order)-2];
 	_n->right = &arrOrder[(_n->order)-1];
-	
+
 	node *Left = _n -> left;
 	node *Right = _n -> right;
-	
+
 	// Konstruktor node
 	_n -> c = '@';
 	_n -> NYT = false;
-	
+
 	Left -> left = NULL;
 	Left -> right = NULL;
 	Left -> parent = _n;
@@ -100,7 +101,7 @@ void HuffmanTree::addNewChar(unsigned char _c) {
 	Left -> weight = 0;
 	Left -> order = (_n -> order) - 2; // Order left, -2 dari order NYT lama
 	Left -> c = 'z'; // NYT dituliskan sebagai karakter 'z'
-	
+
 	Right -> left = NULL;
 	Right -> right = NULL;
 	Right -> parent = _n;
@@ -108,7 +109,7 @@ void HuffmanTree::addNewChar(unsigned char _c) {
 	Right -> weight = 1;
 	Right -> order = (_n -> order) - 1;  // Order left, -1 dari order NYT lama
 	Right -> c = _c; // Pengisian karakter pada Right
-	
+
 	loct[_c] = Right;
 	nNYT = nNYT - 2; // NYT baru
 	update(_n); // Update NYT lama
@@ -122,7 +123,7 @@ void HuffmanTree::addExistingChar(unsigned char _c) {
 // Update sebuah node P dan seluruh parentnya
 void HuffmanTree::update(node *P) {
 	while (P) {
-		P->weight++; // Tambahkan weight		
+		P->weight++; // Tambahkan weight
 		if (P->parent != NULL) {
 			int i = P->order+1;
 			// Cek node yang mungkin di swap
@@ -132,7 +133,7 @@ void HuffmanTree::update(node *P) {
 			// Memenuhi syarat swap
 			if ((P->weight > arrOrder[i-1].weight) && (P->parent != &arrOrder[i-1])) {
 				// Prosedur swap
-				
+
 				// Pertukaran node left dan right
 				if (!isLeaf(P)) {
 						P->left->parent = &arrOrder[i-1];
@@ -152,13 +153,13 @@ void HuffmanTree::update(node *P) {
 						loct[P->c] = &arrOrder[i-1];
 						loct[arrOrder[i-1].c] = P;
 					}
-				}	
-				
+				}
+
 				// Pertukaran letak node dalam array order
 				node temp = arrOrder[P->order];
 				arrOrder[P->order] = arrOrder[i-1];
 				arrOrder[i-1] = temp;
-				
+
 				// Pertukaran nilai order
 				int temp2 = P->order;
 				P->order = arrOrder[i-1].order;
@@ -168,9 +169,9 @@ void HuffmanTree::update(node *P) {
 				node *temp3 = arrOrder[P->order].parent;
 				arrOrder[P->order].parent = arrOrder[i-1].parent;
 				arrOrder[i-1].parent = temp3;
-				
+
 				// Set node yang akan diupdate selanjutnya
-				P = &arrOrder[i-1];				
+				P = &arrOrder[i-1];
 			}
 		}
 		// Lakukan update untuk parent
@@ -180,7 +181,7 @@ void HuffmanTree::update(node *P) {
 
 // Mencari path ke sebuah karakter dalam pohon, meyimpan dan mengoutputkan hasil dalam
 // karakter penyimpanan
-void HuffmanTree::searchNum(unsigned char c, unsigned char &x, int &count, ostream &output) {
+void HuffmanTree::searchNum(BitWriter& writer, unsigned char c) {
 	node *_n = loct[c]; int temp = 0; int arr;
 	// Mencari path
 	while ((_n -> parent) != NULL) {
@@ -195,23 +196,18 @@ void HuffmanTree::searchNum(unsigned char c, unsigned char &x, int &count, ostre
 		}
 		_n = _n -> parent;
 	}
+
 	// Menyimpan dan mengoutputkan path
 	for (int i = 0; i < temp; i++) {
-		x = x << 1;
-		x &= -2;
-		x |= ((arr >> i) & 1);
-		count++;
-		if (count == 8) {
-			output.write((char*) &x, sizeof(char));
-			count = 0;
-		}
+		writer.writeBit((arr>>i)&1);
 	}
 }
 
 // Mencari path ke node NYT dalam pohon, meyimpan dan mengoutputkan hasil dalam
 // karakter penyimpanan
-void HuffmanTree::searchNum(unsigned char &x, int &count, ostream &output) {
-	node *_n = &arrOrder[nNYT]; int temp = 0; int arr;
+void HuffmanTree::searchNumNYT(BitWriter& writer) {
+	node *_n = &arrOrder[nNYT]; int temp = 0;
+	int arr;
 	// Mencari path
 	while ((_n -> parent) != NULL) {
 		if ((_n -> parent -> left) == _n) {
@@ -227,118 +223,87 @@ void HuffmanTree::searchNum(unsigned char &x, int &count, ostream &output) {
 	}
 	// Menyimpan dan mengoutputkan path
 	for (int i = 0; i < temp; i++) {
-		x = x << 1;
-		x &= -2;
-		x |= ((arr >> i) & 1);
-		count++;
-		if (count == 8) {
-			output.write((char*) &x, sizeof(char));
-			count = 0;
-		}
-	}	
+		writer.writeBit((arr>>i)&1);
+	}
 }
 
 // Prosedur pemampatan Adaptive Huffman FGK
-void HuffmanTree::compress(int &size) {
-	unsigned char c; 
+void HuffmanTree::compress(BitWriter& writer, const string& filepath){ // Proses pemampatan
+	unsigned char c;
 	unsigned char x;
-	int count = 0; 
-	ifstream input("coba.bmp", ios::binary | ios::in);
-	ofstream output("output", ios::binary | ios::out);
+	ifstream input(filepath, ios::binary | ios::in);
+
 	if (input != NULL)
 	{
 		input.read((char*) &c, sizeof(char));
 		addNewChar(c);
-		size+=1;
-		char_Bit(c,x,count,output);
+		writer.writeByte(c);
 		input.read((char*) &c, sizeof(char));
 		while (!(input.eof())) {
 			// update pohon dan mengenkripsi
 			if (loct[c] != NULL) {
 				// karakter sudah ada
-				searchNum(c,x,count,output);
+				searchNum(writer,c);
 				addExistingChar(c);
-				size+=1;
-				UI -> size / filesize
 			} else {
 				// karakter belum ada
-				searchNum(x,count,output);
-				char_Bit(c,x,count,output);
+				searchNumNYT(writer);
+				writer.writeByte(c);
 				addNewChar(c);
-				size+=1;
 			}
 			// Pembacaan karakter baru
 			input.read((char*) &c, sizeof(char));
-		} 
-		if (count != 0) {
-			// Menyelesaikan bit yang belum diubah dengan menambahkan
-			// '0' sampai membentuk 8 bit
-			x = x << (8 - count);
-			output.write((char*) &x, sizeof(char));
 		}
 	} else {
 		printf("File tidak dapat dibuka.\n");
 	}
 	input.close();
-	output.close();
 }
 
 // Prosedur penirmampatan Adaptive Huffman FGK
-void HuffmanTree::decompress(int size) {
-	unsigned char x; unsigned char c; 
+void HuffmanTree::decompress(BitReader& reader, const string& filepath, int size){ // Proses penirmampatan
+	unsigned char x; unsigned char c;
 	node *_n;
 	int count;
 	int read;
-	ifstream input("output", ios::binary | ios::in);
-	ofstream output("HASIL.bmp", ios::binary | ios::out);
-	input.read((char*) &x, sizeof(char));	
-	output.write((char*) &x, sizeof(char));
+	ofstream output(filepath, ios::binary | ios::out);
+
+
+    x = reader.readByte();
+	output.write( (char *)&x, sizeof(char));
 	addNewChar(x);
 	count = 0; read = 1; _n = n;
 	// Membaca sampai size sesuai size file awal
 	while (read < size) {
-		if (!(input.eof())) {
-			input.read((char*) &x, sizeof(char));
-			// Mengubah karakter ke bit (array of boolean)
-			count = 8;
-		}
-		// Mengubah beberapa karakter yang telah dibaca menjadi bit
-		// menjadi karakter untuk di outputkan
-		while (count > 0)
-		{
-			// Keluar apabila sudah menghasilkan bit yang sesuai saat dibaca
-			if (read >= size) {
-				break;
-			}
-			// Apabila merupakan daun, outputkan karakter
-			if (isLeaf(_n)) {
-				read += 1;
-				if ((_n->NYT)==true) {
-						unsigned char z;
-						input.read((char*) &c, sizeof(char));
-						char_Bit_decode(c,x,count,output,z);
-						addNewChar(z);
-						_n = n;
-				} else {
-					unsigned char z;
-					z = _n->c;
-					output.write((char*) &z, sizeof(char));
-					addExistingChar(z);
-					_n = n;
-				}
-			}
-			// Bergeser sesuai pohon dan bit yang diterima
-			if (((x >> 7) & 1) == 0) {
-				x = x << 1;
-				_n = (_n-> left);
-				count--;
-			} else {
-				x = x << 1;
-				_n = (_n -> right);
-				count--;
-			}
-		}
-	}
-	input.close();
+
+        // Mengubah beberapa karakter yang telah dibaca menjadi bit
+        // menjadi karakter untuk di outputkan
+        bool bit = reader.readBit();
+
+        // Bergeser sesuai pohon dan bit yang diterima
+        if (!bit) {
+            _n = (_n-> left);
+        } else {
+            _n = (_n -> right);
+        }
+
+        // Apabila merupakan daun, outputkan karakter
+        if (isLeaf(_n)) {
+            read += 1;
+            if ((_n->NYT)==true) {
+                unsigned char z = reader.readByte();
+
+                addNewChar(z);
+                output.write((char*) &z, sizeof(char));
+                _n = n;
+            } else {
+                unsigned char z = _n->c;
+                addExistingChar(z);
+                output.write((char*) &z, sizeof(char));
+                _n = n;
+            }
+        }
+    }
+
 	output.close();
 }

@@ -3,6 +3,9 @@
 
 #include <iostream>
 #include <fstream>
+#include "../include/bitreader.hpp"
+#include "../include/bitwriter.hpp"
+
 using namespace std;
 
 struct node {
@@ -14,7 +17,7 @@ struct node {
 	node *right;
 	node *parent;
 };
-	
+
 class HuffmanTree {
 public:
 
@@ -23,21 +26,21 @@ public:
 
 	node *getNode(); // Mengembalikan node pohon
 	bool isLeaf(node *_n); // Cek apakah node tersebut merupakan daun
-	
+
 	void char_Bit (unsigned char c, unsigned char &x, int &count, ostream &output); // Memasukan char ke dalam karakter tampungan (encode)
 	void char_Bit_decode (unsigned char c, unsigned char &x, int &count, ostream &output, unsigned char &z); // Memasukan char ke dalam karakter tampungan (decode)
-	
+
 	void addNewChar(unsigned char _c); // Menambahkan karakter baru pada pohon
 	void addExistingChar(unsigned char _c); // Menambahkan karakter yang sudah ada
-    
+
     void update(node *P); // Update sebuah node dan seluruh parentnya
 
-	void searchNum(unsigned char c, unsigned char &x, int &count, ostream &output); // Mengoutputkan path ke karakter c
-	void searchNum(unsigned char &x, int &count, ostream &output); // Mengoutputkan path ke NYT
+	void searchNum(BitWriter&, unsigned char c); // Mengoutputkan path ke karakter c
+	void searchNumNYT(BitWriter&); // Mengoutputkan path ke NYT
 
-	void compress(int &size); // Proses pemampatan
-	void decompress(int size); // Proses penirmampatan
-	
+	void compress(BitWriter& writer, const string& filepath); // Proses pemampatan
+	void decompress(BitReader& reader, const string& filepath, int size); // Proses penirmampatan
+
 
 private:
 	// Data
