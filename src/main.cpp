@@ -4,14 +4,48 @@
 #include "../include/archieve.hpp"
 #include "../include/bitreader.hpp"
 #include "../include/bitwriter.hpp"
+#include "../include/HuffmanTree.hpp"
+
 #include <iostream>
 #include <fstream>
 using namespace std;
 
 
+
+
 int main(){
+
     Header head;
-    head = buildHead("sample");
+    Header head2;
+    head = buildHead("C:\\", {"sample","input"});
+    ofstream outfile("sample.hu", ios::out | ios::binary );
+
+
+    Header2Bin(head, outfile);
+    BitWriter writer(outfile);
+    printHead(head);
+    fillArchieve(head, writer, "C:\\");
+    writer.flush();
+    outfile.close();
+
+    cout << "Compress Done\n";
+
+    ifstream cfile("sample.hu", ios::in | ios::binary );
+    Bin2Header(head2,cfile);
+    BitReader reader(cfile);
+    buildFolder(head2,"C:\\sample2\\");
+    extractArchieve(head2, reader, "C:\\sample2\\");
+
+    cfile.close();
+
+/*
+    HuffmanTree H;
+    ofstream outfile("E:\\University\\Semester 4\\stima\\huffman\\c", ios::out |ios::binary);
+    BitWriter writer(outfile);
+    H.compress(writer,"E:\\University\\Semester 4\\stima\\huffman\\aE72mqM_460sv.mp4");
+*/
+
+    /*
     ifstream infile("bitread.sample", ios::in | ios::binary);
     ofstream outfile("bitwrite.sample", ios::binary | ios::out );
     BitReader reader(infile);
@@ -25,8 +59,7 @@ int main(){
     }
 
     outfile.close();
-
-
+*/
 /*
     for( auto& it : head.folders ){
         cout << it.folderName << endl;
