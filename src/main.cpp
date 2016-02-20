@@ -14,7 +14,7 @@ using namespace std;
 
 
 int main(){
-
+/*
     Header head;
     Header head2;
     head = buildHead("C:\\", {"sample","input"});
@@ -27,16 +27,19 @@ int main(){
     fillArchieve(head, writer, "C:\\");
     writer.flush();
     outfile.close();
-
+*/
+    buildArchieve("E:\\University\\Semester 4\\stima\\huffman", {"sample","input"}, "sample.hu");
     cout << "Compress Done\n";
+    expandArchieve("sample.hu","sample2");
 
+/*
     ifstream cfile("sample.hu", ios::in | ios::binary );
     Bin2Header(head2,cfile);
     BitReader reader(cfile);
     buildFolder(head2,"C:\\sample2\\");
     extractArchieve(head2, reader, "C:\\sample2\\");
-
     cfile.close();
+*/
 
 /*
     HuffmanTree H;

@@ -13,10 +13,10 @@ void fillArchieve( Header& header, BitWriter& writer, const string& ftarget ){
     for( auto& fl : header.folders ){
         string cdir = fl.folderPath;
         //getFullDir(&fl,&header);
-        cout << cdir << "\\ (" << fl.numOfFile <<")\n";
+//        cout << cdir << "\\ (" << fl.numOfFile <<")\n";
         for(int limit = fileidx + fl.numOfFile; fileidx < limit; ++ fileidx ){
             string fullPath = cdir + "\\" + header.files[fileidx].fileName;
-            cout << fullPath << " " << (header.files[fileidx].size) << endl;
+//            cout << fullPath << " " << (header.files[fileidx].size) << endl;
             /*
             ifstream infile( fullPath );
 //            myfile << infile.rdbuf();
@@ -40,11 +40,11 @@ void extractArchieve( Header& header, BitReader& reader, const string& ftarget )
     int fileidx = 0;
     for( auto& fl : header.folders ){
         string cdir = getFullDir(&fl,&header);
-        cout << cdir << "\\ (" << fl.numOfFile <<")\n";
+//        cout << cdir << "\\ (" << fl.numOfFile <<")\n";
         for(int limit = fileidx + fl.numOfFile; fileidx < limit; ++ fileidx ){
             string fullPath = ftarget + "\\" + cdir + "\\" + header.files[fileidx].fileName;
             int size = header.files[fileidx].size;
-            cout << fullPath << " " << size << endl;
+//            cout << fullPath << " " << size << endl;
 //            myfile << infile.rdbuf();
 //            infile.tellg(0,ios::beg);
 
@@ -73,5 +73,31 @@ void buildFolder( Header& head, const string& ftarget ){
         string cdir = ftarget + '\\' +getFullDir(&fl,&head);
         CreateDirectory(cdir.c_str(),NULL);
     }
+}
+
+
+void buildArchieve( const string& ftarget, const vector<string>& cmprsList, const string& output_file ){
+    ofstream outfile(output_file, ios::out | ios::binary );
+    Header head = buildHead(ftarget, cmprsList);
+
+
+    Header2Bin(head, outfile);
+    BitWriter writer(outfile);
+//    printHead(head);
+    fillArchieve(head, writer, ftarget);
+    writer.flush();
+    outfile.close();
+}
+
+void expandArchieve( const string& input_file, const string& outputPath ){
+    Header head2;
+    ifstream cfile(input_file, ios::in | ios::binary );
+    Bin2Header(head2,cfile);
+
+    BitReader reader(cfile);
+    buildFolder(head2,outputPath);
+    extractArchieve(head2, reader, outputPath);
+
+    cfile.close();
 }
 
