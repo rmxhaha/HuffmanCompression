@@ -8,7 +8,7 @@
 
 using namespace std;
 
-Header buildHead( const string& rootDirectory ){
+Header buildHead( const string& root, const vector<string>& compressList ){
     Header head;
 
     auto getFileSize = [](const string& fn){
@@ -22,16 +22,15 @@ Header buildHead( const string& rootDirectory ){
     std::function<void (const string& , int , const string& )>
         build = [&head,&getFileSize,&build](const string& parentdir, int parentId, const string& dirname)
     {
-        string cdir = parentdir + "/" + dirname;
+        string cdir = parentdir + "\\" + dirname;
         //cout << cdir << endl;
 
         vector<string> list;
         listIn( list, cdir );
 
-
         int nFile = 0;
         for( auto it = list.begin(); it != list.end(); ++ it ){
-            string cfile = cdir + "/" + *it;
+            string cfile = cdir + "\\" + *it;
             if( isFile(cfile) ){
                 head.files.push_back(File(*it, getFileSize(cfile)));
                 ++ nFile;
@@ -39,17 +38,36 @@ Header buildHead( const string& rootDirectory ){
         }
 
         int cid = head.folders.size();
-        head.folders.push_back(Folder(dirname,parentId,nFile));
+        head.folders.push_back(Folder(cdir,parentId,nFile));
 
         for( auto it = list.begin(); it != list.end(); ++ it ){
-            string cfile = cdir + "/" + *it;
+            string cfile = cdir + "\\" + *it;
             if( !isFile(cfile) ){
                 build(cdir,cid,*it);
             }
         }
     };
 
-    build( rootDirectory,-1,"");
+    int nFile = 0;
+    for( auto it = compressList.begin(); it != compressList.end(); ++ it ){
+        string cfile = root + "\\" + *it;
+        if( isFile(cfile) ){
+            head.files.push_back( File(*it,getFileSize(cfile)) );
+            ++ nFile;
+        }
+    }
+
+    int cid = 0; // must be zero for root
+
+    head.folders.push_back( Folder("",-1,nFile) );
+
+
+    for( auto it = compressList.begin(); it != compressList.end(); ++ it ){
+        string cfile = root + "\\" + *it;
+        if( !isFile(cfile) ){
+            build(root,0,*it);
+        }
+    }
 
     return head;
 }

@@ -9,7 +9,7 @@ struct Header {
     vector<File> files;
 };
 
-Header buildHead( const string& rootDirectory );
+Header buildHead( const string& root, const vector<string>& compressList );
 
 string getFullDir( Folder *fl, Header *header );
 
