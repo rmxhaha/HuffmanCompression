@@ -51,6 +51,7 @@ Header buildHead( const string& root, const vector<string>& compressList ){
     int nFile = 0;
     for( auto it = compressList.begin(); it != compressList.end(); ++ it ){
         string cfile = root + "\\" + *it;
+
         if( isFile(cfile) ){
             head.files.push_back( File(*it,getFileSize(cfile)) );
             ++ nFile;
@@ -60,10 +61,12 @@ Header buildHead( const string& root, const vector<string>& compressList ){
     int cid = 0; // must be zero for root
 
     head.folders.push_back( Folder("",-1,nFile) );
-
+    head.folders[0].folderName = "";
+    head.folders[0].folderPath = root;
 
     for( auto it = compressList.begin(); it != compressList.end(); ++ it ){
         string cfile = root + "\\" + *it;
+
         if( !isFile(cfile) ){
             build(root,0,*it);
         }
