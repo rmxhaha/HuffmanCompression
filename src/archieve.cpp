@@ -16,6 +16,7 @@ void fillArchieve( Header& header, BitWriter& writer, const string& ftarget ){
 //        cout << cdir << "\\ (" << fl.numOfFile <<")\n";
         for(int limit = fileidx + fl.numOfFile; fileidx < limit; ++ fileidx ){
             string fullPath = cdir + "\\" + header.files[fileidx].fileName;
+            int size = (header.files[fileidx].size);
 //            cout << fullPath << " " << (header.files[fileidx].size) << endl;
             /*
             ifstream infile( fullPath );
@@ -30,8 +31,12 @@ void fillArchieve( Header& header, BitWriter& writer, const string& ftarget ){
             }
             infile.close();
             */
+            writer.resetCounter();
+
             HuffmanTree T;
             T.compress(writer,fullPath);
+
+            double ratio = (double) (writer.getBitCount() / 8) / (double) size;
         }
     }
 }
