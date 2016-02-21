@@ -1,7 +1,9 @@
 #include "../include/bitwriter.hpp"
 
-BitWriter::BitWriter(ofstream& s) : stream(s), buffer(0), buffer_bid(7){}
+BitWriter::BitWriter(ofstream& s) : stream(s), buffer(0), buffer_bid(7){ resetCounter(); }
 
+void BitWriter::resetCounter(){ bit_count = 0; }
+long long BitWriter::getBitCount() const { return bit_count; }
 void BitWriter::writeBit(bool b){
     if(b)
         buffer |= 1 << buffer_bid;
@@ -10,6 +12,8 @@ void BitWriter::writeBit(bool b){
     if( buffer_bid < 0 ){
         flush();
     }
+
+    ++ bit_count;
 }
 
 void BitWriter::writeByte(char c){
