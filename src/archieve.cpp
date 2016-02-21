@@ -3,9 +3,14 @@
 #include <iostream>
 #include <windows.h>
 #include "../include/HuffmanTree.hpp"
+#include <chrono>
 
 using namespace std;
 
+
+typedef std::chrono::high_resolution_clock Time;
+typedef std::chrono::milliseconds ms;
+typedef std::chrono::duration<float> fsec;
 
 
 void fillArchieve( Header& header, BitWriter& writer, const string& ftarget ){
@@ -88,6 +93,9 @@ void buildFolder( Header& head, const string& ftarget ){
 
 
 void buildArchieve( const string& ftarget, const vector<string>& cmprsList, const string& output_file ){
+
+    auto t0 = Time::now();
+
     ofstream outfile(output_file, ios::out | ios::binary );
     Header head = buildHead(ftarget, cmprsList);
 
@@ -98,9 +106,16 @@ void buildArchieve( const string& ftarget, const vector<string>& cmprsList, cons
     fillArchieve(head, writer, ftarget);
     writer.flush();
     outfile.close();
+
+    auto t1 = Time::now();
+
+    fsec fs = t1 - t0;
+    std::cout << fs.count() << "s\n";
 }
 
 void expandArchieve( const string& input_file, const string& outputPath ){
+    auto t0 = Time::now();
+
     Header head2;
     ifstream cfile(input_file, ios::in | ios::binary );
     Bin2Header(head2,cfile);
@@ -110,5 +125,10 @@ void expandArchieve( const string& input_file, const string& outputPath ){
     extractArchieve(head2, reader, outputPath);
 
     cfile.close();
+
+    auto t1 = Time::now();
+
+    fsec fs = t1 - t0;
+    std::cout << fs.count() << "s\n";
 }
 
